@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ถาม-ตอบเรื่องแมว | Cat Q&A</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #22223b 0%, #2d3142 100%);
+            position: relative;
+            min-height: 100vh;
+        }
+        .glass {
+            background: rgba(34, 36, 59, 0.8);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            backdrop-filter: blur(12px);
+            border: 2px solid #f9a8d4;
+        }
+        .cat-emoji {
+            font-size: 2.5rem;
+            animation: bounce 1.5s infinite alternate;
+            filter: drop-shadow(0 2px 12px #f9a8d4);
+        }
+        @keyframes bounce {
+            to { transform: translateY(-10px);}
+        }
+        .cat-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.07;
+            background: url('https://cdn.pixabay.com/photo/2017/01/31/13/14/cat-2022346_1280.png') repeat center center;
+            background-size: 250px;
+        }
+        .btn-cute {
+            background: linear-gradient(90deg, #f9a8d4 0%, #6366f1 100%);
+            color: #fff;
+            border: none;
+        }
+        .btn-cute:hover {
+            background: linear-gradient(90deg, #f472b6 0%, #818cf8 100%);
+            transform: scale(1.05);
+        }
+        .response-success {
+            color: #22d3ee;
+        }
+        .response-warning {
+            color: #fbbf24;
+        }
+        .input-cat-wrapper {
+            position: relative;
+        }
+        .input-cat-wrapper .cat-input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.7rem;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .input-cat-wrapper textarea {
+            padding-left: 3.2rem !important;
+            background: #27293d;
+            color: #f3f4f6;
+        }
+        textarea:focus {
+            border-color: #f9a8d4 !important;
+            box-shadow: 0 0 0 2px #f9a8d4;
+            background: #23243a;
+            color: #fff;
+        }
+        /* Scrollbar dark mode */
+        ::-webkit-scrollbar {
+            width: 8px;
+            background: #23243a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f425e;
+            border-radius: 6px;
+        }
+    </style>
+    <script>
+        // เพิ่มฟังก์ชันสำหรับสุขภาพแมว
+        function getHealthAnswer(question) {
+            const q = question.toLowerCase().trim();
+            if ((q.includes('แมว') || q.includes('แมวของฉัน')) && (q.includes('ป่วย') || q.includes('ไม่สบาย'))) {
+                return {
+                    text: 'หากแมวมีอาการป่วย เช่น ซึม เบื่ออาหาร อาเจียน หรือท้องเสีย ควรพาไปพบสัตวแพทย์ทันทีเพื่อรับการวินิจฉัยและรักษา',
+                    icon: '🏥',
+                    type: 'warning'
+                };
+            } else if ((q.includes('แมว') || q.includes('แมวของฉัน')) && (q.includes('อาเจียน') || q.includes('อ้วก'))) {
+                return {
+                    text: 'แมวอาเจียนอาจเกิดจากกินอาหารเร็วเกินไป ขนติดคอ หรือปัญหาสุขภาพ หากอาเจียนบ่อยหรือมีอาการอื่นร่วม ควรพบสัตวแพทย์',
+                    icon: '🤢',
+                    type: 'warning'
+                };
+            } else if ((q.includes('แมว') || q.includes('แมวของฉัน')) && (q.includes('ขนร่วง'))) {
+                return {
+                    text: 'ขนร่วงในแมวอาจเกิดจากผลัดขนตามฤดูกาล ภูมิแพ้ หรือโรคผิวหนัง หากขนร่วงเป็นหย่อมหรือมีแผล ควรปรึกษาสัตวแพทย์',
+                    icon: '🐾',
+                    type: 'warning'
+                };
+            } else if ((q.includes('แมว') || q.includes('แมวของฉัน')) && (q.includes('รักษา') || q.includes('ดูแลเมื่อป่วย'))) {
+                return {
+                    text: 'หากแมวป่วยควรแยกแมวออกจากสัตว์อื่น ให้พักผ่อน ดูแลเรื่องอาหารน้ำ และพาไปพบสัตวแพทย์เพื่อรับการรักษาที่ถูกต้อง',
+                    icon: '💊',
+                    type: 'warning'
+                };
+            }
+            // เพิ่มคำถาม-ตอบ ความสุขของแมว และวิธีดูแล
+            else if ((q.includes('แมว') || q.includes('แมวของฉัน')) && (q.includes('ความสุข') || q.includes('แมวมีความสุขไหม'))) {
+                return {
+                    text: 'แมวที่มีความสุขจะแสดงออกด้วยการนอนเหยียดตัว ขดตัวข้างเจ้าของ ส่งเสียงเพอร์ หรือเล่นของเล่น หากแมวดูผ่อนคลายและกินอาหารดี แสดงว่ามีความสุข',
+                    icon: '😻',
+                    type: 'success'
+                };
+            } else if ((q.includes('แมว') || q.includes('แมวของฉัน')) && (q.includes('ดูแล') || q.includes('วิธีดูแล') || q.includes('ทำให้แมวมีความสุข'))) {
+                return {
+                    text: 'ดูแลแมวให้มีความสุขด้วยการให้อาหารที่เหมาะสม น้ำสะอาด ของเล่น กระบะทรายสะอาด และให้เวลากับแมว รวมถึงพาไปตรวจสุขภาพประจำปี',
+                    icon: '🧶',
+                    type: 'success'
+                };
+            }
+            return null;
+        }
+    </script>
+</head>
+<body class="min-h-screen flex items-center justify-center dark" style="background: none;">
+    <div class="cat-bg"></div>
+    <div class="glass rounded-2xl p-8 md:p-12 w-full max-w-xl mx-4">
+        <div class="flex flex-col items-center mb-6">
+            <span class="cat-emoji mb-2">🐾</span>
+            <h1 class="text-4xl font-bold text-pink-300 mb-1 drop-shadow">ถาม-ตอบเรื่องแมว</h1>
+            <p class="text-gray-300 text-center">อยากรู้เรื่องแมว? ถามได้เลย!</p>
+        </div>
+
+        <div class="mb-4 input-cat-wrapper">
+            <span class="cat-input-icon">😺</span>
+            <textarea id="question-input" rows="3"
+                class="w-full p-4 pl-12 border-2 border-indigo-600 rounded-xl focus:outline-none focus:border-pink-300 transition bg-[#27293d] text-gray-100 placeholder:text-gray-400"
+                placeholder="พิมพ์คำถามเกี่ยวกับแมว เช่น แมวควรกินอะไร?"></textarea>
+        </div>
+        <button id="submit-button"
+            class="w-full btn-cute text-white font-semibold py-3 rounded-xl shadow-md hover:from-pink-400 hover:to-indigo-600 transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-pink-300">
+            ส่งคำถาม
+        </button>
+
+        <div id="response-box" class="hidden mt-8">
+            <div id="response-icon" class="text-3xl mb-2"></div>
+            <div id="response-text" class="text-lg font-medium"></div>
+        </div>
+
+        <div class="mt-10 text-center text-xs text-gray-500">
+            © 2025 Cat Q&A | ทำโดย พ่อสายรุ่ง&สายสิญจน์ <span class="text-pink-300">♥</span>
+        </div>
+        <div class="mt-2 text-center text-xs text-gray-400">
+            ส่งกำลังใจ 0-218-38132-4 กสิกร  เดชฤทธิ์ ผ
+        </div>
+    </div>
+    <script>
+        const questionInput = document.getElementById('question-input');
+        const submitButton = document.getElementById('submit-button');
+        const responseBox = document.getElementById('response-box');
+        const responseText = document.getElementById('response-text');
+        const responseIcon = document.getElementById('response-icon');
+
+        function getAnswer(question) {
+            const q = question.toLowerCase().trim();
+            if (q.includes('แมว') && q.includes('กินอะไร')) {
+                return {
+                    text: 'แมวควรกินอาหารที่มีโปรตีนสูง เช่น เนื้อสัตว์ ปลา หรืออาหารแมวสำเร็จรูปที่มีคุณภาพดี หลีกเลี่ยงอาหารคนและของหวาน',
+                    icon: '🍗',
+                    type: 'success'
+                };
+            } else if (q.includes('แมว') && (q.includes('นิสัย') || q.includes('นิสัยใจคอ'))) {
+                return {
+                    text: 'แมวมีนิสัยรักอิสระ ชอบสำรวจ ชอบเล่น และบางครั้งก็ขี้อ้อนกับเจ้าของมาก ๆ',
+                    icon: '😺',
+                    type: 'success'
+                };
+            } else if (q.includes('แมว') && q.includes('อายุ')) {
+                return {
+                    text: 'แมวบ้านมีอายุเฉลี่ย 12-15 ปี หากดูแลดีอาจอยู่ได้ถึง 20 ปีเลย!',
+                    icon: '🎂',
+                    type: 'success'
+                };
+            } else if (q.includes('แมว') && (q.includes('เลี้ยง') || q.includes('ดูแล'))) {
+                return {
+                    text: 'ควรให้อาหาร น้ำสะอาด กระบะทราย และพื้นที่ให้แมวได้เล่น รวมถึงพาไปตรวจสุขภาพประจำปี',
+                    icon: '🏡',
+                    type: 'success'
+                };
+            } else if (q.includes('แมว') && (q.includes('พันธุ์') || q.includes('สายพันธุ์'))) {
+                return {
+                    text: 'แมวมีหลายสายพันธุ์ เช่น เปอร์เซีย, สก็อตติชโฟลด์, อเมริกันช็อตแฮร์, ไทย ฯลฯ แต่ละสายพันธุ์มีลักษณะเฉพาะตัว',
+                    icon: '🐈',
+                    type: 'success'
+                };
+            } else if (q.includes('แมว') && (q.includes('ทำหมัน') || q.includes('ฉีดวัคซีน'))) {
+                return {
+                    text: 'ควรพาแมวไปทำหมันและฉีดวัคซีนตามคำแนะนำของสัตวแพทย์ เพื่อสุขภาพที่ดีของแมว',
+                    icon: '💉',
+                    type: 'success'
+                };
+            } else if (q === '') {
+                return {
+                    text: 'กรุณาป้อนคำถามก่อนค่ะ',
+                    icon: '⚠️',
+                    type: 'warning'
+                };
+            } else {
+                return {
+                    text: 'ขออภัยค่ะ ฉันยังไม่มีข้อมูลสำหรับคำถามนี้ ลองถามเรื่องอาหาร, นิสัย, อายุ, การเลี้ยง หรือสายพันธุ์แมวได้นะคะ',
+                    icon: '🤔',
+                    type: 'warning'
+                };
+            }
+        }
+
+        submitButton.addEventListener('click', () => {
+            const userQuestion = questionInput.value;
+            const healthAns = getHealthAnswer(userQuestion);
+
+            let answer;
+            if (healthAns) {
+                answer = healthAns;
+            } else {
+                answer = getAnswer(userQuestion);
+            }
+
+            responseText.textContent = answer.text;
+            responseIcon.textContent = answer.icon;
+            responseBox.classList.remove('hidden');
+            responseText.className = 'text-lg font-medium';
+            if (answer.type === 'success') {
+                responseText.classList.add('text-cyan-200');
+            } else {
+                responseText.classList.add('text-yellow-300');
+            }
+        });
+
+        questionInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitButton.click();
+            }
+        });
+    </script>
+</body>
+</html>
